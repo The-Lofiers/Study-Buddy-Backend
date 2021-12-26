@@ -35,6 +35,8 @@ const userDefs = gql`
       password: String
     ): User!
     deleteUser(id: Int!): User!
+
+    login(email: String!, password: String!): String!
   }
 `;
 
@@ -115,6 +117,21 @@ const userResolvers = {
             });
             await user.destroy();
             return user;
+        },
+        login: async (parent, args, context, info) => {
+            const user = await context.models.User.findOne({
+                where: {
+                    email: args.email,
+                },
+            });
+            if (!user) { // if user does not exist
+                throw new AuthenticationError("Invalid credentials"); // throw error
+            }
+            const valid = await bcrypt.compare(args.password, user.password); // compare the password
+            if (!valid) {
+                throw new AuthenticationError("Invalid credentials"); // throw error
+            }
+            return jwt.sign({ id: user._id }, process.env.JWT_SECRET); // create a token
         },
     },
 };
