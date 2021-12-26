@@ -52,16 +52,16 @@ const userResolvers = {
     Mutation: {
         createUser: async (parent, args, context, info) => {
             // validate the user input
-            if (emailValidation(args.email)) {
+            if (!emailValidation(args.email)) {
                 throw new UserInputError("Invalid email");
             }
-            if (passwordValidation(args.password)) {
+            if (!passwordValidation(args.password)) {
                 throw new UserInputError("Invalid password");
             }
-            if (nameValidation(args.firstname)) {
+            if (!nameValidation(args.firstname)) {
                 throw new UserInputError("Invalid firstname");
             }
-            if (nameValidation(args.lastname)) {
+            if (!nameValidation(args.lastname)) {
                 throw new UserInputError("Invalid lastname");
             }
             const salt = await bcrypt.genSalt(10);
