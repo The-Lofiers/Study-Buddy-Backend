@@ -8,10 +8,14 @@ var app = express();
 var { graphqlHTTP } = require('express-graphql');
 require('dotenv').config({ path: './.env' })
 var db = require('./db/index');
+var cors = require('cors');
+
 // console.log(process.env);
 
 
 const schema = require('./gql/index');
+
+app.use(cors());
 
 app.use(logger('dev'));
 app.use(express.json());
