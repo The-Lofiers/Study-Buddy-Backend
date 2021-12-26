@@ -7,9 +7,6 @@ var app = express();
 require('dotenv').config({ path: './.env' })
 var cors = require('cors');
 // console.log(process.env);
-
-
-
 app.use(cors());
 
 app.use(logger('dev'));

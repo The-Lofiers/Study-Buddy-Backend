@@ -1,7 +1,7 @@
-const { gql, UserInputError } = require("apollo-server"); // if throws error fix this
-const { date } = require("../gql/Date");
+const { gql, UserInputError, AuthenticationError, ForbiddenError } = require("apollo-server"); // if throws error fix this
 const bcrypt = require("bcryptjs"); // encrypt passwords
 const { emailValidation, passwordValidation, nameValidation } = require("../helper/validation");
+const jwt = require('jsonwebtoken'); // for authentication
 
 // define the schema, the models, the queries, and the mutations for the graphql server
 // create user, update user, and delete user
@@ -26,7 +26,7 @@ const userDefs = gql`
       lastname: String!
       email: String!
       password: String!
-    ): User!
+    ): String!
     editUser(
       id: Int!
       firstname: String
@@ -71,13 +71,18 @@ const userResolvers = {
             }
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(args.password, salt);
-            const user = await context.models.User.create({
-                firstname: args.firstname,
-                lastname: args.lastname,
-                email: args.email,
-                password: hashedPassword,
-            });
-            return user;
+            try {
+                const user = await context.models.User.create({
+                    firstname: args.firstname,
+                    lastname: args.lastname,
+                    email: args.email,
+                    password: hashedPassword,
+                });
+                return jwt.sign({ id: user._id }, process.env.JWT_SECRET); // create a token
+            }
+            catch (err) {
+                throw new Error('Error creating account');
+            }
         },
         editUser: async (parent, args, context, info) => {
             const user = await context.models.User.findOne({
