@@ -4,9 +4,10 @@
  * Module dependencies.
  */
 
-const { ApolloServer } = require('apollo-server');
+const { ApolloServer } = require('apollo-server-express');
 const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
 const jwt = require('jsonwebtoken');
+const expressJwt = require("express-jwt");
 var app = require("../app");
 require("dotenv").config({ path: "../.env" });
 var debug = require("debug")("lofi-study-sesh-backend:server");
@@ -18,106 +19,128 @@ const models = require('../models');
 /**
  * Get port from environment and store in Express.
  */
+async function startApolloServer(typeDefs, resolvers) {
 
-var port = normalizePort("4000");
-app.set("port", port);
+  var port = normalizePort("4000");
+  app.set("port", port);
 
-/**
- * Create HTTP server.
- */
+  // add the jwt middleware to the app
+  app.use(
+    expressJwt({
+      secret: process.env.JWT_SECRET,
+      algorithms: ["HS256"],
+      credentialsRequired: false
+    })
+  );
 
-var httpServer = http.createServer(app);
+  /**
+   * Create HTTP server.
+   */
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+  var httpServer = http.createServer(app);
 
-// hs256 algorithm
-const getUser = token => {
-  if (token) {
-    try {
-      // return the user information from the token
-      return jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-      // if there's a problem with the token, throw an error
-      throw new Error('Session invalid');
+  /**
+   * Listen on provided port, on all network interfaces.
+   */
+
+  // hs256 algorithm
+  const getUser = token => {
+    if (token) {
+      try {
+        // return the user information from the token
+        return jwt.verify(token, process.env.JWT_SECRET);
+      } catch (err) {
+        // if there's a problem with the token, throw an error
+        throw new Error('Session invalid');
+      }
     }
+  };
+
+
+  const server = new ApolloServer({
+    typeDefs: [userDefs],
+    resolvers: userResolvers,
+    playground: true,
+    context: ({ req }) => {
+      // get the user token from the headers
+      const token = req.headers.authorization;
+      console.log(token);
+      // try to retrieve a user with the token
+      const user = getUser(token);
+      // for now, let's log the user to the console:
+      console.log(user);
+      // add the db models and the user to the context
+      return { models, user };
+    },
+    formatError: (err) => {
+      if (err.extensions?.code === 'UNAUTHORIZED') {
+        return new Error('Authentication required.');
+      }
+    },
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  });
+
+  await server.start();
+
+  server.applyMiddleware({ app, path: '/api' }); // error handler
+
+  server.listen(port, () => console.log("listening to 4000"));
+  // server.on("error", onError);
+  // server.on("listening", onListening);
+
+  /**
+   * Normalize a port into a number, string, or false.
+   */
+
+  function normalizePort(val) {
+    var port = parseInt(val, 10);
+
+    if (isNaN(port)) {
+      // named pipe
+      return val;
+    }
+
+    if (port >= 0) {
+      // port number
+      return port;
+    }
+
+    return false;
   }
-};
 
-const server = new ApolloServer({
-  typeDefs: [userDefs],
-  resolvers: userResolvers,
-  playground: true,
-  context: ({ req }) => {
-    // get the user token from the headers
-    const token = req.headers.authorization;
-    // try to retrieve a user with the token
-    const user = getUser(token);
-    // for now, let's log the user to the console:
-    console.log(user);
-    // add the db models and the user to the context
-    return { models, user };
-  },
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-});
+  /**
+   * Event listener for HTTP server "error" event.
+   */
 
-server.listen(port, () => console.log("listening to 4000"));
-// server.on("error", onError);
-// server.on("listening", onListening);
+  // function onError(error) {
+  //   if (error.syscall !== "listen") {
+  //     throw error;
+  //   }
 
-/**
- * Normalize a port into a number, string, or false.
- */
+  //   var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
 
-function normalizePort(val) {
-  var port = parseInt(val, 10);
+  //   // handle specific listen errors with friendly messages
+  //   switch (error.code) {
+  //     case "EACCES":
+  //       console.error(bind + " requires elevated privileges");
+  //       process.exit(1);
+  //       break;
+  //     case "EADDRINUSE":
+  //       console.error(bind + " is already in use");
+  //       process.exit(1);
+  //       break;
+  //     default:
+  //       throw error;
+  //   }
+  // }
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+  // /**
+  //  * Event listener for HTTP server "listening" event.
+  //  */
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
+  // function onListening() {
+  //   var addr = server.address();
+  //   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  //   debug("Listening on " + bind);
+  // }
 }
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-// function onError(error) {
-//   if (error.syscall !== "listen") {
-//     throw error;
-//   }
-
-//   var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
-
-//   // handle specific listen errors with friendly messages
-//   switch (error.code) {
-//     case "EACCES":
-//       console.error(bind + " requires elevated privileges");
-//       process.exit(1);
-//       break;
-//     case "EADDRINUSE":
-//       console.error(bind + " is already in use");
-//       process.exit(1);
-//       break;
-//     default:
-//       throw error;
-//   }
-// }
-
-// /**
-//  * Event listener for HTTP server "listening" event.
-//  */
-
-// function onListening() {
-//   var addr = server.address();
-//   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-//   debug("Listening on " + bind);
-// }

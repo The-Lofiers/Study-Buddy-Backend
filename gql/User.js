@@ -1,4 +1,4 @@
-const { gql, UserInputError, AuthenticationError, ForbiddenError } = require("apollo-server"); // if throws error fix this
+const { gql, UserInputError, AuthenticationError, ForbiddenError } = require("apollo-server-express"); // if throws error fix this
 const bcrypt = require("bcryptjs"); // encrypt passwords
 const { emailValidation, passwordValidation, nameValidation } = require("../helper/validation");
 const jwt = require('jsonwebtoken'); // for authentication
@@ -34,7 +34,7 @@ const userDefs = gql`
       email: String
       password: String
     ): User!
-    deleteUser(id: Int!): User!
+    deleteUser(id: Int!): Boolean!
 
     login(email: String!, password: String!): String!
   }
@@ -42,7 +42,10 @@ const userDefs = gql`
 
 const userResolvers = {
     Query: {
-        user: (parent, args, context, info) => {
+        user: (parent, args, context, { user }) => {
+            if (!user) {
+                throw new AuthenticationError('OOPSIE WOOPSIE UWU you are not authenticated!')
+            }
             return context.models.User.findOne({
                 where: {
                     id: args.id,
@@ -116,7 +119,7 @@ const userResolvers = {
                 },
             });
             await user.destroy();
-            return user;
+            return true;
         },
         login: async (parent, args, context, info) => {
             const user = await context.models.User.findOne({
