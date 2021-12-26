@@ -1,35 +1,33 @@
-const graphql = require('graphql')
-const { GraphQLObjectType, GraphQLString, GraphQLInt } = graphql
+const { gql } = require("apollo-server"); // if throws error fix this
+const { date } = require("../gql/Date");
 
+const userDefs = gql`
+  scalar Date
+  type User {
+    id: Int!
+    firstname: String!
+    lastname: String!
+    email: String!
+    password: String!
+    createdAt: Date!
+    updatedAt: Date!
+  }
 
-// simple user query
-const UserType = new GraphQLObjectType({
-    name: 'User',
-    fields: () => ({
-        id: { type: GraphQLInt },
-        firstName: { type: GraphQLString },
-        lastName: { type: GraphQLString },
-        age: { type: GraphQLInt },
-        email: { type: GraphQLString },
-        password: { type: GraphQLString }
-    })
-})
+  type Query {
+    user(id: Int!): User
+  }
+`;
 
-const RootQuery = new GraphQLObjectType({
-    name: 'RootQueryType',
-    fields: {
-        user: {
-            type: UserType,
-            args: { id: { type: GraphQLInt } },
-            resolve(parentValue, args) {
-                return axios.get(`http://localhost:3000/users/${args.id}`)
-                    .then(res => res.data)
-            }
-        }
-    }
-})
+const userResolvers = {
+  Query: {
+    user: (parent, args, context, info) => {
+      return context.models.User.findOne({
+        where: {
+          id: args.id,
+        },
+      });
+    },
+  },
+};
 
-
-
-module.exports = RootQuery
-
+module.exports = { userDefs, userResolvers };
