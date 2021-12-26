@@ -51,18 +51,23 @@ const userResolvers = {
 
     Mutation: {
         createUser: async (parent, args, context, info) => {
+            let errors = {};
             // validate the user input
             if (!emailValidation(args.email)) {
-                throw new UserInputError("Invalid email");
+                errors.email = "Please enter a valid email address";
             }
             if (!passwordValidation(args.password)) {
-                throw new UserInputError("Invalid password");
+                errors.password =
+                    "Please enter a password with at least 8 characters, at least one Uppercase letter, one number, and one special character";
             }
             if (!nameValidation(args.firstname)) {
-                throw new UserInputError("Invalid firstname");
+                errors.firstname = "Please enter a valid first name";
             }
             if (!nameValidation(args.lastname)) {
-                throw new UserInputError("Invalid lastname");
+                errors.lastname = "Please enter a valid last name";
+            }
+            if (Object.keys(errors).length > 0) {
+                throw new UserInputError("user input errors", { errors });
             }
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(args.password, salt);
