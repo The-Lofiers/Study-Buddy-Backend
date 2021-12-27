@@ -55,14 +55,13 @@ const getUser = token => {
   }
 };
 
-
 const server = new ApolloServer({
   typeDefs: [userDefs],
   resolvers: userResolvers,
   playground: true,
-  context: ({ req }) => {
+  context: ({ req }) => { // sending authentication token to this body
     // get the user token from the headers
-    const token = req.headers.authorization;
+    const token = req.headers.authorization; 
     // try to retrieve a user with the token
     const user = getUser(token);
     // for now, let's log the user to the console:

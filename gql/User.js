@@ -43,7 +43,7 @@ const userDefs = gql`
 const userResolvers = {
     Query: {
         user: (parent, args, context, info) => {
-            if (!context.user) {
+            if (!context.user) { // same context used to check if user is logged in
                 throw new AuthenticationError('OOPSIE WOOPSIE UWU you are not authenticated!')
             }
             return context.models.User.findOne({
@@ -90,29 +90,56 @@ const userResolvers = {
             }
         },
         editUser: async (parent, args, context, info) => {
+            if (!context.user) { // same context used to check if user is logged in
+                throw new AuthenticationError('OOPSIE WOOPSIE UWU you are not authenticated!')
+            }
             const user = await context.models.User.findOne({
                 where: {
                     id: args.id,
                 },
             });
+            let errors = {};
             if (args.firstname) {
-                user.firstname = args.firstname;
+                if (!nameValidation(args.firstname)) {
+                    errors.firstname = "Please enter a valid first name";
+                } else {
+                    user.firstname = args.firstname;
+                }
             }
             if (args.lastname) {
-                user.lastname = args.lastname;
+                if (!nameValidation(args.lastname)) {
+                    errors.lastname = "Please enter a valid last name";
+                } else {
+                    user.lastname = args.lastname;
+                }
             }
             if (args.email) {
-                user.email = args.email;
+                if (!emailValidation(args.email)) {
+                    errors.email = "Please enter a valid email address";
+                } else {
+                    user.email = args.email;
+                }
             }
             if (args.password) {
-                const salt = await bcrypt.genSalt(10);
-                const hashedPassword = await bcrypt.hash(args.password, salt);
-                user.password = hashedPassword;
+                if (!passwordValidation(args.password)) {
+                    errors.password =
+                        "Please enter a password with at least 8 characters, at least one Uppercase letter, one number, and one special character";
+                } else {
+                    const salt = await bcrypt.genSalt(10);
+                    const hashedPassword = await bcrypt.hash(args.password, salt);
+                    user.password = hashedPassword;
+                }
+            }
+            if (Object.keys(errors).length > 0) {
+                throw new UserInputError("user input errors", { errors });
             }
             await user.save();
             return user;
         },
         deleteUser: async (parent, args, context, info) => {
+            if (!context.user) { // same context used to check if user is logged in
+                throw new AuthenticationError('OOPSIE WOOPSIE UWU you are not authenticated!')
+            }
             const user = await context.models.User.findOne({
                 where: {
                     id: args.id,
