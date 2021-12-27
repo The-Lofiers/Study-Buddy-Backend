@@ -34,10 +34,10 @@ const userDefs = gql`
 
     editUser(
       id: Int!
-      firstname: String!
-      lastname: String!
-      email: String!
-      password: String!
+      firstname: String
+      lastname: String
+      email: String
+      password: String
     ): User!
 
     deleteUser(id: Int!): Boolean!
