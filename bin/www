@@ -42,49 +42,44 @@ var httpServer = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-  // hs256 algorithm
-  const getUser = token => {
-    if (token) {
-      try {
-        // return the user information from the token
-        return jwt.verify(token, process.env.JWT_SECRET);
-      } catch (err) {
-        // if there's a problem with the token, throw an error
-        throw new Error('Session invalid');
-      }
+// hs256 algorithm
+const getUser = token => {
+  if (token) {
+    try {
+      // return the user information from the token
+      return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      // if there's a problem with the token, throw an error
+      throw new Error('Session invalid');
     }
-  };
+  }
+};
 
 
-  const server = new ApolloServer({
-    typeDefs: [userDefs],
-    resolvers: userResolvers,
-    playground: true,
-    context: ({ req }) => {
-      // get the user token from the headers
-      const token = req.headers.authorization;
-      console.log(token);
-      // try to retrieve a user with the token
-      const user = getUser(token);
-      // for now, let's log the user to the console:
-      console.log(user);
-      // add the db models and the user to the context
-      return { models, user };
-    },
-    formatError: (err) => {
-      if (err.extensions?.code === 'UNAUTHORIZED') {
-        return new Error('Authentication required.');
-      }
-    },
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-  });
+const server = new ApolloServer({
+  typeDefs: [userDefs],
+  resolvers: userResolvers,
+  playground: true,
+  context: ({ req }) => {
+    // get the user token from the headers
+    const token = req.headers.authorization;
+    // try to retrieve a user with the token
+    const user = getUser(token);
+    // for now, let's log the user to the console:
+    // console.log(user);
+    // add the db models and the user to the context
+    return { models, user };
+  },
+
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+});
 
 
 
 // server.listen(port, () => console.log("listening to 4000"));
 // server.on("error", onError);
 // server.on("listening", onListening);
-app.listen(port, () => console.log("listening to 4000"));
+server.listen(port, () => console.log("listening to 4000"));
 /**
  * Normalize a port into a number, string, or false.
  */
