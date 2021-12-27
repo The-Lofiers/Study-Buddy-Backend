@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const { ApolloServer } = require('apollo-server-express');
+const { ApolloServer } = require('apollo-server');
 const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
 const jwt = require('jsonwebtoken');
 const expressJwt = require("express-jwt");
@@ -19,29 +19,28 @@ const models = require('../models');
 /**
  * Get port from environment and store in Express.
  */
-async function startApolloServer(typeDefs, resolvers) {
 
-  var port = normalizePort("4000");
-  app.set("port", port);
+var port = normalizePort("4000");
+app.set("port", port);
 
-  // add the jwt middleware to the app
-  app.use(
-    expressJwt({
-      secret: process.env.JWT_SECRET,
-      algorithms: ["HS256"],
-      credentialsRequired: false
-    })
-  );
+// add the jwt middleware to the app
+app.use(
+  expressJwt({
+    secret: process.env.JWT_SECRET,
+    algorithms: ["HS256"],
+    credentialsRequired: false
+  })
+);
 
-  /**
-   * Create HTTP server.
-   */
+/**
+ * Create HTTP server.
+ */
 
-  var httpServer = http.createServer(app);
+var httpServer = http.createServer(app);
 
-  /**
-   * Listen on provided port, on all network interfaces.
-   */
+/**
+ * Listen on provided port, on all network interfaces.
+ */
 
   // hs256 algorithm
   const getUser = token => {
@@ -80,67 +79,64 @@ async function startApolloServer(typeDefs, resolvers) {
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
 
-  await server.start();
 
-  server.applyMiddleware({ app, path: '/api' }); // error handler
 
-  server.listen(port, () => console.log("listening to 4000"));
-  // server.on("error", onError);
-  // server.on("listening", onListening);
+// server.listen(port, () => console.log("listening to 4000"));
+// server.on("error", onError);
+// server.on("listening", onListening);
+app.listen(port, () => console.log("listening to 4000"));
+/**
+ * Normalize a port into a number, string, or false.
+ */
 
-  /**
-   * Normalize a port into a number, string, or false.
-   */
+function normalizePort(val) {
+  var port = parseInt(val, 10);
 
-  function normalizePort(val) {
-    var port = parseInt(val, 10);
-
-    if (isNaN(port)) {
-      // named pipe
-      return val;
-    }
-
-    if (port >= 0) {
-      // port number
-      return port;
-    }
-
-    return false;
+  if (isNaN(port)) {
+    // named pipe
+    return val;
   }
 
-  /**
-   * Event listener for HTTP server "error" event.
-   */
+  if (port >= 0) {
+    // port number
+    return port;
+  }
 
-  // function onError(error) {
-  //   if (error.syscall !== "listen") {
-  //     throw error;
-  //   }
-
-  //   var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
-
-  //   // handle specific listen errors with friendly messages
-  //   switch (error.code) {
-  //     case "EACCES":
-  //       console.error(bind + " requires elevated privileges");
-  //       process.exit(1);
-  //       break;
-  //     case "EADDRINUSE":
-  //       console.error(bind + " is already in use");
-  //       process.exit(1);
-  //       break;
-  //     default:
-  //       throw error;
-  //   }
-  // }
-
-  // /**
-  //  * Event listener for HTTP server "listening" event.
-  //  */
-
-  // function onListening() {
-  //   var addr = server.address();
-  //   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  //   debug("Listening on " + bind);
-  // }
+  return false;
 }
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+// function onError(error) {
+//   if (error.syscall !== "listen") {
+//     throw error;
+//   }
+
+//   var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+
+//   // handle specific listen errors with friendly messages
+//   switch (error.code) {
+//     case "EACCES":
+//       console.error(bind + " requires elevated privileges");
+//       process.exit(1);
+//       break;
+//     case "EADDRINUSE":
+//       console.error(bind + " is already in use");
+//       process.exit(1);
+//       break;
+//     default:
+//       throw error;
+//   }
+// }
+
+// /**
+//  * Event listener for HTTP server "listening" event.
+//  */
+
+// function onListening() {
+//   var addr = server.address();
+//   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+//   debug("Listening on " + bind);
+// }

@@ -1,4 +1,4 @@
-const { gql, UserInputError, AuthenticationError, ForbiddenError } = require("apollo-server-express"); // if throws error fix this
+const { gql, UserInputError, AuthenticationError, ForbiddenError } = require("apollo-server"); // if throws error fix this
 const bcrypt = require("bcryptjs"); // encrypt passwords
 const { emailValidation, passwordValidation, nameValidation } = require("../helper/validation");
 const jwt = require('jsonwebtoken'); // for authentication
