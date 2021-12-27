@@ -1,9 +1,9 @@
-const { GraphQLScalarType } = require ('graphql');
-const { Kind } = require ('graphql/language');
+const { GraphQLScalarType } = require("graphql");
+const { Kind } = require("graphql/language");
 const resolverMap = {
   Date: new GraphQLScalarType({
-    name: 'Date',
-    description: 'Date custom scalar type',
+    name: "Date",
+    description: "Date custom scalar type",
     parseValue(value) {
       return new Date(value); // value from the client
     },
@@ -12,7 +12,7 @@ const resolverMap = {
     },
     parseLiteral(ast) {
       if (ast.kind === Kind.INT) {
-        return new Date(ast.value) // ast value is always in string format
+        return new Date(ast.value); // ast value is always in string format
       }
       return null;
     },
