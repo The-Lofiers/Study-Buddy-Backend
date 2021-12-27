@@ -23,7 +23,7 @@ const passwordValidation = (password) => {
 // name validation
 const nameValidation = (name) => {
   // regex for name
-  // minimum 2 characters, at least one letter
+  // minimum 2 characters
   const regEx3 = /^[a-zA-Z]{2,}$/;
   if (regEx3.test(name)) {
     return true;

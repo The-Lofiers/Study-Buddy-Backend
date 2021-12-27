@@ -1,9 +1,4 @@
-const {
-  gql,
-  UserInputError,
-  AuthenticationError,
-  ForbiddenError,
-} = require("apollo-server"); // if throws error fix this
+const { gql, UserInputError, AuthenticationError } = require("apollo-server"); // if throws error fix this
 const bcrypt = require("bcryptjs"); // encrypt passwords
 const {
   emailValidation,
@@ -27,7 +22,7 @@ const userDefs = gql`
   }
 
   type Query {
-    user(id: Int!): User
+    user(id: Int!): User!
   }
   type Mutation {
     createUser(
@@ -39,10 +34,10 @@ const userDefs = gql`
 
     editUser(
       id: Int!
-      firstname: String
-      lastname: String
-      email: String
-      password: String
+      firstname: String!
+      lastname: String!
+      email: String!
+      password: String!
     ): User!
 
     deleteUser(id: Int!): Boolean!
