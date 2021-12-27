@@ -43,6 +43,9 @@ const userDefs = gql`
 const userResolvers = {
     Query: {
         user: (parent, args, context, info) => {
+            if (!context.user) {
+                throw new AuthenticationError('OOPSIE WOOPSIE UWU you are not authenticated!')
+            }
             return context.models.User.findOne({
                 where: {
                     id: args.id,
