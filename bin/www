@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const { ApolloServer } = require("apollo-server");
+const { ApolloServer, ForbiddenError } = require("apollo-server");
 const { ApolloServerPluginDrainHttpServer } = require("apollo-server-core");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
@@ -48,7 +48,7 @@ const getUser = (token) => {
       return jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
       // if there's a problem with the token, throw an error
-      throw new Error("Session invalid");
+      throw new ForbiddenError("Session invalid");
     }
   }
 };
