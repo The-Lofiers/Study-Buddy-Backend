@@ -6,30 +6,43 @@ const jwt = require("jsonwebtoken");
 // createClass(className: String!): Class! - >
 //similar to cpp returns string 
 const classDef = gql`
+    scalar Date
+
     type Class {
-        class_ID: Int!
+        id: Int!
         className: String!
         todo_ID: Int!
         notes_ID: Int!
         grades_ID: Int!
+        createdAt: Date!
+        updatedAt: Date!
     }
     type UserClass {
-        ID: Int!
+        id: Int!
         user_ID: Int!
-        className: String!
+        createdAt: Date!
+        updatedAt: Date!
     }
 
     type Query {
+
+
     }
 
     type Mutation {
         createClass(
             className: String!
+            todo_ID: Int!
+            notes_ID: Int!
+            grades_ID: Int!
         ): Class!
 
         editClass(
             class_ID: Int!
             className: String!
+            todo_ID: Int!
+            notes_ID: Int!
+            grades_ID: Int!
         ): Class!
 
         deleteClass(
@@ -37,6 +50,11 @@ const classDef = gql`
         ): Boolean!
 
         createUserClass(
+            user_ID: Int!
+        ): UserClass!
 
+        deleteUserClass(
+            class_ID: Int!
+        ): Boolean!
     }
 `;
