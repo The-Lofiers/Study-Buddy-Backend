@@ -11,6 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // belongs to Class 
+      gradeCalculator.belongsTo(models.Class,
+        {
+          // if class is deleted, delete all gradeCalculators associated with class
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'class_ID',
+            allowNull: false
+          }
+        });
     }
   };
   gradeCalculator.init({
