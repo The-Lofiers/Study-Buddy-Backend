@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
           }
         });
-
     }
   };
 
@@ -37,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     user_id: {
       type: DataTypes.INTEGER,
       // references user to id
-      references: { 
+      references: {
         model: 'User',
         key: 'id',
       }
