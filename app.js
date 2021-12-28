@@ -9,13 +9,13 @@ require("dotenv").config({ path: "./.env" });
 var cors = require("cors");
 // console.log(process.env);
 app.use(cors());
-
-app.use(compression());
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+// compress all requests
+app.use(compression()); 
+app.use(logger("dev")); // log every request to the console from morgan
+app.use(express.json()); // parse application/json
+app.use(express.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
+app.use(cookieParser()); // parse cookies
+app.use(express.static(path.join(__dirname, "public"))); // set the static files location
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

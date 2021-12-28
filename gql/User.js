@@ -9,6 +9,7 @@ const jwt = require("jsonwebtoken"); // for authentication
 
 // define the schema, the models, the queries, and the mutations for the graphql server
 // create user, update user, and delete user
+// ! means that the field is required, dont use for editUser
 const userDefs = gql`
   scalar Date
   type User {
