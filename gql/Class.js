@@ -25,8 +25,10 @@ const classDef = gql`
     }
 
     type Query {
-
-
+        class(id: Int!): Class!
+        classes: [Class!]!
+        userClasses: [UserClass!]!
+        userClass(id: Int!): UserClass!
     }
 
     type Mutation {
