@@ -60,3 +60,4 @@ const classDef = gql`
         ): Boolean!
     }
 `;
+
