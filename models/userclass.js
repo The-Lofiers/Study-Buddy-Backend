@@ -32,9 +32,16 @@ module.exports = (sequelize, DataTypes) => {
 
     }
   };
-  
+
   userClass.init({
-    user_ID: DataTypes.INTEGER
+    user_id: {
+      type: DataTypes.INTEGER,
+      // references user to id
+      references: { 
+        model: 'User',
+        key: 'id',
+      }
+    }
   }, {
     sequelize,
     modelName: 'userClass',
