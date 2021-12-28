@@ -11,8 +11,28 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      userClass.belongsTo(models.User,
+        {
+          // if user is deleted, delete all userClasses associated with user
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'user_ID',
+            allowNull: false
+          }
+        });
+      userClass.hasMany(models.Class,
+        {
+          // if class is deleted, delete all userClasses associated with class
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'class_ID',
+            allowNull: false
+          }
+        });
+
     }
   };
+  
   userClass.init({
     user_ID: DataTypes.INTEGER
   }, {

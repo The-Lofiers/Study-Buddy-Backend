@@ -9,6 +9,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.hasMany(
+        models.userClass,
+        {
+          // if user is deleted, delete all userClasses associated with user
+          onDelete: "CASCADE", 
+          foreignKey: {
+            name: 'user_ID',
+            allowNull: false
+          }
+        });
     }
   }
   User.init(
