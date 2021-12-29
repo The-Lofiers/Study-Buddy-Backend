@@ -30,6 +30,16 @@ module.exports = (sequelize, DataTypes) => {
 
           }
         });
+      Class.hasMany(models.toDo,
+        {
+          // if class is deleted, delete all toDos associated with class
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'todo_ID',
+            allowNull: false
+          }
+        });
+
     }
   };
   Class.init({
@@ -42,7 +52,14 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     className: DataTypes.STRING,
-    todo_ID: DataTypes.INTEGER,
+    todo_ID: {
+      type: DataTypes.INTEGER,
+      // references todo to id
+      references: {
+        model: 'toDo',
+        key: 'id',
+      }
+    },
     notes_ID: DataTypes.INTEGER,
     grade_ID: {
       type: DataTypes.INTEGER,
