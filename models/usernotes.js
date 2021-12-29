@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class notes extends Model {
+  class usernotes extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,18 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // one to many relationship, class can have many notes
-      notes.belongsTo(models.Class,
-        {
-          // if class is deleted, delete all notes associated with class
-          // WONT DELETE FROM GOOGLE DRIVE ONLY DB !
-          onDelete: "CASCADE",
-          foreignKey: {
-            name: 'class_ID',
-            allowNull: false
-          }
-        });
-      notes.hasMany(models.usernotes,
+      // one to one relationship, notes can have one usernotes
+      usernotes.belongsTo(models.notes,
         {
           // if notes is deleted, delete all usernotes associated with notes
           onDelete: "CASCADE",
@@ -33,26 +23,20 @@ module.exports = (sequelize, DataTypes) => {
         });
     }
   };
-  notes.init({
-    class_ID: {
-      type: DataTypes.INTEGER,
-      // references class to id
-      references: {
-        model: 'Class',
-        key: 'id',
-      }
-    },
+  usernotes.init({
     notes_ID: {
       type: DataTypes.INTEGER,
       // references notes to id
       references: {
-        model: 'usernotes',
+        model: 'notes',
         key: 'id',
       }
-    }
+    },
+    url: DataTypes.STRING,
+    docName: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'notes',
+    modelName: 'usernotes',
   });
-  return notes;
+  return usernotes;
 };
