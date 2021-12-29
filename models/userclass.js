@@ -40,7 +40,16 @@ module.exports = (sequelize, DataTypes) => {
         model: 'User',
         key: 'id',
       }
-    }
+    },
+
+    class_id: {
+      type: DataTypes.INTEGER,
+      // references class to id
+      references: {
+        model: 'Class',
+        key: 'id',
+      }
+    },
   }, {
     sequelize,
     modelName: 'userClass',

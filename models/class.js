@@ -11,15 +11,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Class.belongsTo(models.userClass,
-        {
-          // if user is deleted, delete all userClasses associated with user
-          onDelete: "CASCADE",
-          foreignKey: {
-            name: 'class_ID',
-            allowNull: false
-          }
-        });
       Class.hasOne(models.gradeCalculator,
         {
           // if class is deleted, delete all gradeCalculators associated with class
@@ -51,14 +42,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Class.init({
-    class_ID: {
-      type: DataTypes.INTEGER,
-      // references user to id
-      references: {
-        model: 'userClass',
-        key: 'id',
-      }
-    },
     className: DataTypes.STRING,
     todo_ID: {
       type: DataTypes.INTEGER,
