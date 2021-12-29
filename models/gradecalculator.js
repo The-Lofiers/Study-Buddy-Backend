@@ -24,6 +24,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   gradeCalculator.init({
+    class_ID: {
+      type: DataTypes.INTEGER,
+      // references class to id
+      references: {
+        model: 'Class',
+        key: 'id',
+      }
+    },
     assignment: DataTypes.STRING,
     weight: DataTypes.INTEGER,
     inputGrade: DataTypes.INTEGER,

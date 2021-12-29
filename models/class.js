@@ -20,6 +20,16 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
           }
         });
+      Class.hasOne(models.gradeCalculator,
+        {
+          // if class is deleted, delete all gradeCalculators associated with class
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'grade_ID',
+            allowNull: false
+
+          }
+        });
     }
   };
   Class.init({
@@ -34,7 +44,14 @@ module.exports = (sequelize, DataTypes) => {
     className: DataTypes.STRING,
     todo_ID: DataTypes.INTEGER,
     notes_ID: DataTypes.INTEGER,
-    grades_ID: DataTypes.INTEGER
+    grade_ID: {
+      type: DataTypes.INTEGER,
+      // references gradeCalculator to id
+      references: {
+        model: 'gradeCalculator',
+        key: 'id',
+      }
+    }
   }, {
     sequelize,
     modelName: 'Class',
