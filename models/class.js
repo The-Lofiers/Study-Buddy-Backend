@@ -39,7 +39,15 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
           }
         });
-
+      Class.hasMany(models.notes,
+        {
+          // if class is deleted, delete all notes associated with class
+          onDelete: "CASCADE",
+          foreignKey: {
+            name: 'notes_ID',
+            allowNull: false
+          }
+        });
     }
   };
   Class.init({
@@ -60,7 +68,14 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id',
       }
     },
-    notes_ID: DataTypes.INTEGER,
+    notes_ID: {
+      type: DataTypes.INTEGER,
+      // references notes to id
+      references: {
+        model: 'notes',
+        key: 'id',
+      }
+    },
     grade_ID: {
       type: DataTypes.INTEGER,
       // references gradeCalculator to id
