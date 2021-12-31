@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Class.belongsTo(models.User, {
+        foreignKey: 'user_ID',
+        onDelete: 'CASCADE',
+      });
+
       Class.hasOne(models.gradeCalculator,
         {
           // if class is deleted, delete all gradeCalculators associated with class
@@ -64,6 +69,14 @@ module.exports = (sequelize, DataTypes) => {
       // references gradeCalculator to id
       references: {
         model: 'gradeCalculator',
+        key: 'id',
+      }
+    },
+    user_ID: {
+      type: DataTypes.INTEGER,
+      // references user to id
+      references: {
+        model: 'user',
         key: 'id',
       }
     }

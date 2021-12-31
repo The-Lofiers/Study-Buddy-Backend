@@ -2,9 +2,9 @@ const { gql, UserInputError, AuthenticationError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
 
 // define the schema, the models, the queries, and the mutations for the graphql server
-// string function(int id, string name) -> 
+// string function(int id, string name) ->
 // createClass(className: String!): Class! - >
-//similar to cpp returns string 
+// similar to cpp returns string
 const classDef = gql`
     scalar Date
 
@@ -18,20 +18,9 @@ const classDef = gql`
         updatedAt: Date!
     }
 
-    type UserClass {
-        class_ID: Int!
-        id: Int!
-        user_ID: Int!
-        createdAt: Date!
-        updatedAt: Date!
-    }
-
     type Query {
         class(id: Int!): Class!
         classes: [Class!]!
-        userClasses: [UserClass!]!
-        userClass(id: Int!): UserClass!
-        userClass(class_ID: Int!): [Class!]!
     }
 
     type Mutation {
@@ -50,26 +39,28 @@ const classDef = gql`
             id: Int!
         ): Boolean!
 
-        createUserClass(
-            class_ID: Int!
-            user_ID: Int!
-        ): UserClass!
-
-        deleteUserClass(
-            id: Int!
-        ): Boolean!
     }
 `;
 
 
 const classResolvers = {
+    // class(id: Int!): Class!
+    // classes: [Class!]!
+    // userClasses: [UserClass!]!
+    // userClass(id: Int!): UserClass!
+    // userClass(class_ID: Int!): [Class!]!
+    
 
-    // type Query {
-    //     class(id: Int!): Class!
-    //     classes: [Class!]!
-    //     userClasses: [UserClass!]!
-    //     userClass(id: Int!): UserClass!
-    // }
+
+
+
+
+
+
+
+
+
+   
 
     Query: {
         class: (parent, args, context, info) => {
@@ -93,32 +84,13 @@ const classResolvers = {
                     "OOPSIE WOOPSIE UWU you are not authenticated!"
                 );
             }
-            return context.models.Class.findAll();
-        },
-
-        userClasses: (parent, args, context, info) => {
-            if (!context.user) {
-                // same context used to check if user is logged in
-                throw new AuthenticationError(
-                    "OOPSIE WOOPSIE UWU you are not authenticated!"
-                );
-            }
-            return context.models.UserClass.findAll();
-        },
-
-        userClass: (parent, args, context, info) => {
-            if (!context.user) {
-                // same context used to check if user is logged in
-                throw new AuthenticationError(
-                    "OOPSIE WOOPSIE UWU you are not authenticated!"
-                );
-            }
-            return context.models.UserClass.findOne({
+            return context.models.Class.findAll({
                 where: {
-                    id: args.id,
-                },
+
+                }
             });
         },
+
 
         // // return user_ID from UserClass table
         // userClass: (parent, args, context, info) => {
@@ -135,20 +107,6 @@ const classResolvers = {
         //     });
         // },
 
-        // return class_ID from UserClass table
-        userClass: (parent, args, context, info) => {
-            if (!context.user) {
-                // same context used to check if user is logged in
-                throw new AuthenticationError(
-                    "OOPSIE WOOPSIE UWU you are not authenticated!"
-                );
-            }
-            return context.models.UserClass.findOne({
-                where: {
-                    class_ID: args.class_ID,
-                },
-            });
-        },
     },
 
     Mutation: {
