@@ -49,18 +49,6 @@ const classResolvers = {
     // userClasses: [UserClass!]!
     // userClass(id: Int!): UserClass!
     // userClass(class_ID: Int!): [Class!]!
-    
-
-
-
-
-
-
-
-
-
-
-   
 
     Query: {
         class: (parent, args, context, info) => {
@@ -125,5 +113,4 @@ const classResolvers = {
             });
         }
     },
-
 };  

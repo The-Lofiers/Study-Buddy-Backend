@@ -1,0 +1,1 @@
+validate class name in front-end
