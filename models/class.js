@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'grade_ID',
         onDelete: 'CASCADE',
       });
-      Class.hasMany(models.Note, {
+      Class.hasMany(models.Notes, {
         foreignKey: 'notes_ID',
         onDelete: 'CASCADE',
       });
