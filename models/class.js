@@ -15,11 +15,17 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'user_ID',
       });
       Class.hasMany(models.ToDo, {
+        foreignKey: 'toDo_ID',
         onDelete: 'CASCADE',
       });
       Class.hasOne(models.GradeCalc, {
+        foreignKey: 'grade_ID',
         onDelete: 'CASCADE',
-        });
+      });
+      Class.hasMany(models.Note, {
+        foreignKey: 'notes_ID',
+        onDelete: 'CASCADE',
+      });
     }
   };
   Class.init({
