@@ -107,10 +107,41 @@ const classResolvers = {
             }
             return context.models.Class.create({
                 className: args.className,
-                todo_ID: args.todo_ID,
                 notes_ID: args.notes_ID,
                 grade_ID: args.grade_ID,
             });
-        }
+        },
+        editClass: (parent, args, context, info) => {
+            if (!context.user) {
+                // same context used to check if user is logged in
+                throw new AuthenticationError(
+                    "OOPSIE WOOPSIE UWU you are not authenticated!"
+                );
+            }
+            return context.models.Class.update(
+                {
+                    className: args.className,
+                    todo_ID: args.todo_ID,
+                },
+                {
+                    where: {
+                        id: args.id,
+                    },
+                }
+            );
+        },
+        deleteClass: (parent, args, context, info) => {
+            if (!context.user) {
+                // same context used to check if user is logged in
+                throw new AuthenticationError(
+                    "OOPSIE WOOPSIE UWU you are not authenticated!"
+                );
+            }
+            return context.models.Class.destroy({
+                where: {
+                    id: args.id,
+                },
+            });
+        },
     },
 };  
