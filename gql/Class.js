@@ -26,13 +26,13 @@ const classDef = gql`
     type Mutation {
         createClass(
             className: String!
-            todo_ID: Int!
             notes_ID: Int!
             grades_ID: Int!
         ): Class!
 
         editClass(
-            className: String!
+            className: String
+            todo_ID: Int
         ): Class!
 
         deleteClass(
