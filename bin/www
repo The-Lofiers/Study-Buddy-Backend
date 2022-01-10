@@ -12,6 +12,11 @@ var app = require("../app");
 require("dotenv").config({ path: "../.env" });
 var http = require("http");
 const { userDefs, userResolvers } = require("../gql/User");
+const { notesDef, notesResolvers } = require("../gql/Notes");
+const { classDefs, classResolvers } = require("../gql/Class");
+const { gradeDefs, gradeResolvers } = require("../gql/Grade");
+const { userNotesDef, userNotesResolvers } = require("../gql/UserNotes");
+const { toDoDef, toDoResolvers } = require("../gql/Todos");
 const models = require("../models");
 
 /**
@@ -54,8 +59,8 @@ const getUser = (token) => {
 };
 
 const server = new ApolloServer({
-  typeDefs: [userDefs],
-  resolvers: userResolvers,
+  typeDefs: [userDefs, notesDef, classDefs, gradeDefs, userNotesDef, toDoDef],
+  resolvers: [userResolvers, notesResolvers, classResolvers, gradeResolvers, userNotesResolvers, toDoResolvers],
   playground: true,
   context: ({ req }) => {
     // sending authentication token to this body
