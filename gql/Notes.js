@@ -4,48 +4,37 @@ const jwt = require("jsonwebtoken");
 const classDef = gql`
     scalar Date
 
-    Type GradeCalc {
+    type Notes {
         id: Int!
-        assignment: String!
-        weight: Int!
-        inputGrade: Int!
-        average: Int!
         class_ID: Int!
         updatedAt: Date!
         createdAt: Date!
     }
 
     type Query {
-        gradeCalc(id: Int!): GradeCalc!
+        notes(id: Int!): Notes!
     }
 
     type Mutation {
-        createGradeCalc(
+        createNotes(
             class_ID: Int!
-        ): GradeCalc!
+        ): Notes!
 
-        editGradeCalc(
-            weight: Int,
-            inputGrade: Int,
-            average: Int,
-            assignment: String,
-        ): GradeCalc!
-
-        deleteGradeCalc(
+        deleteNotes(
             id: Int!
         ): Boolean!
-`;
+    `;
 
-const gradeCalcResolvers = {
+const notesResolvers = {
     Query: {
-        gradeCalc: (parent, args, context, info) => {
+        notes: (parent, args, context, info) => {
             if (!context.user) {
                 // same context used to check if user is logged in
                 throw new AuthenticationError(
                     "OOPSIE WOOPSIE UWU you are not authenticated!"
                 );
             }
-            return context.models.GradeCalc.findOne({
+            return context.models.Notes.findOne({
                 where: {
                     id: args.id,
                 },
@@ -53,43 +42,25 @@ const gradeCalcResolvers = {
         },
     },
     Mutation: {
-        createGradeCalc: (parent, args, context, info) => {
+        createNotes: (parent, args, context, info) => {
             if (!context.user) {
                 // same context used to check if user is logged in
                 throw new AuthenticationError(
                     "OOPSIE WOOPSIE UWU you are not authenticated!"
                 );
             }
-            return context.models.GradeCalc.create({
+            return context.models.Notes.create({
                 class_ID: args.class_ID,
             });
         },
-        editGradeCalc: (parent, args, context, info) => {
+        deleteNotes: (parent, args, context, info) => {
             if (!context.user) {
                 // same context used to check if user is logged in
                 throw new AuthenticationError(
                     "OOPSIE WOOPSIE UWU you are not authenticated!"
                 );
             }
-            return context.models.GradeCalc.update({
-                weight: args.weight,
-                inputGrade: args.inputGrade,
-                average: args.average,
-                assignment: args.assignment,
-            }, {
-                where: {
-                    id: args.id,
-                },
-            });
-        },
-        deleteGradeCalc: (parent, args, context, info) => {
-            if (!context.user) {
-                // same context used to check if user is logged in
-                throw new AuthenticationError(
-                    "OOPSIE WOOPSIE UWU you are not authenticated!"
-                );
-            }
-            return context.models.GradeCalc.destroy({
+            return context.models.Notes.destroy({
                 where: {
                     id: args.id,
                 },

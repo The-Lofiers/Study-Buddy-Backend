@@ -26,10 +26,10 @@ module.exports = (sequelize, DataTypes) => {
         {
           // if notes is deleted, delete all usernotes associated with notes
           onDelete: "CASCADE",
-          foreignKey: {
-            name: 'notes_ID',
-            allowNull: false
-          }
+          // foreignKey: {
+          //   name: 'notes_ID',
+          //   allowNull: false
+          // }
         });
     }
   };
@@ -42,14 +42,14 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id',
       }
     },
-    notes_ID: {
-      type: DataTypes.INTEGER,
-      // references notes to id
-      references: {
-        model: 'usernotes',
-        key: 'id',
-      }
-    }
+    // notes_ID: {
+    //   type: DataTypes.INTEGER,
+    //   // references notes to id
+    //   references: {
+    //     model: 'usernotes',
+    //     key: 'id',
+    //   }
+    // }
   }, {
     sequelize,
     modelName: 'notes',
