@@ -1,7 +1,7 @@
 const { gql, UserInputError, AuthenticationError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
 
-const classDef = gql`
+const notesDef = gql`
     scalar Date
 
     type Notes {
