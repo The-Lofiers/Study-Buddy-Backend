@@ -11,13 +11,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Class.belongsTo(models.User, {
+        foreignKey: 'user_ID',
+      });
+      Class.hasMany(models.ToDo, {
+        onDelete: 'CASCADE',
+      });
+      Class.hasOne(models.GradeCalc, {
+        onDelete: 'CASCADE',
+        });
     }
   };
   Class.init({
     className: DataTypes.STRING,
     todo_ID: DataTypes.INTEGER,
     notes_ID: DataTypes.INTEGER,
-    grade_ID: DataTypes.INTEGER
+    grade_ID: DataTypes.INTEGER,
+    user_ID: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'class',

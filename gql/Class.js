@@ -13,6 +13,7 @@ const classDef = gql`
         className: String!
         todo_ID: Int!
         notes_ID: Int!
+        user_ID: Int!
         grade_ID: Int!
         createdAt: Date!
         updatedAt: Date!
@@ -109,6 +110,7 @@ const classResolvers = {
                 className: args.className,
                 notes_ID: args.notes_ID,
                 grade_ID: args.grade_ID,
+                user_ID: context.user.id,
             });
         },
         editClass: (parent, args, context, info) => {
