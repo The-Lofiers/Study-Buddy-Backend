@@ -146,4 +146,6 @@ const classResolvers = {
             });
         },
     },
-};  
+};
+
+module.exports = { classDef, classResolvers };

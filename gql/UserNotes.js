@@ -98,3 +98,5 @@ const userNotesResolvers = {
         },
     },
 };
+
+module.exports = { userNotesDef, userNotesResolvers };

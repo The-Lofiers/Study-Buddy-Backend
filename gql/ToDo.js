@@ -87,3 +87,5 @@ const toDoResolvers = {
         },
     },
 };
+
+module.exports = { toDoDef, toDoResolvers };

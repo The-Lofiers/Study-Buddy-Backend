@@ -68,3 +68,5 @@ const notesResolvers = {
         },
     },
 };
+
+module.exports = { notesDef, notesResolvers };
