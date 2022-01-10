@@ -36,3 +36,64 @@ const classDef = gql`
         ): Boolean!
 `;
 
+const gradeCalcResolvers = {
+    Query: {
+        gradeCalc: (parent, args, context, info) => {
+            if (!context.user) {
+                // same context used to check if user is logged in
+                throw new AuthenticationError(
+                    "OOPSIE WOOPSIE UWU you are not authenticated!"
+                );
+            }
+            return context.models.GradeCalc.findOne({
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    },
+    Mutation: {
+        createGradeCalc: (parent, args, context, info) => {
+            if (!context.user) {
+                // same context used to check if user is logged in
+                throw new AuthenticationError(
+                    "OOPSIE WOOPSIE UWU you are not authenticated!"
+                );
+            }
+            return context.models.GradeCalc.create({
+                class_ID: args.class_ID,
+            });
+        },
+        editGradeCalc: (parent, args, context, info) => {
+            if (!context.user) {
+                // same context used to check if user is logged in
+                throw new AuthenticationError(
+                    "OOPSIE WOOPSIE UWU you are not authenticated!"
+                );
+            }
+            return context.models.GradeCalc.update({
+                weight: args.weight,
+                inputGrade: args.inputGrade,
+                average: args.average,
+                assignment: args.assignment,
+            }, {
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+        deleteGradeCalc: (parent, args, context, info) => {
+            if (!context.user) {
+                // same context used to check if user is logged in
+                throw new AuthenticationError(
+                    "OOPSIE WOOPSIE UWU you are not authenticated!"
+                );
+            }
+            return context.models.GradeCalc.destroy({
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    },
+};
