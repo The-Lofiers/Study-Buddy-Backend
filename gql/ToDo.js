@@ -29,6 +29,7 @@ const toDoDef = gql`
         deleteToDo(
             id: Int!
         ): Boolean!
+    }
 `;
 
 const toDoResolvers = {

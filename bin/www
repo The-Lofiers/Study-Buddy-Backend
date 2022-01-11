@@ -6,6 +6,8 @@
 
 const { ApolloServer, ForbiddenError } = require("apollo-server");
 const { ApolloServerPluginDrainHttpServer } = require("apollo-server-core");
+const { mergeResolvers } = require('@graphql-tools/merge')
+const { mergeTypeDefs } = require('@graphql-tools/merge')
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 var app = require("../app");
@@ -14,10 +16,12 @@ var http = require("http");
 const { userDefs, userResolvers } = require("../gql/User");
 const { notesDef, notesResolvers } = require("../gql/Notes");
 const { classDefs, classResolvers } = require("../gql/Class");
-const { gradeDefs, gradeResolvers } = require("../gql/Grade");
+const { gradeDefs, gradeResolvers } = require("../gql/GradeCalc");
 const { userNotesDef, userNotesResolvers } = require("../gql/UserNotes");
-const { toDoDef, toDoResolvers } = require("../gql/Todos");
+const { toDoDef, toDoResolvers } = require("../gql/ToDo");
 const models = require("../models");
+const resolvers = mergeResolvers([userResolvers, notesResolvers, classResolvers, gradeResolvers, userNotesResolvers, toDoResolvers]);
+const typeDefs = mergeTypeDefs([userDefs, notesDef, classDefs, gradeDefs, userNotesDef, toDoDef]);
 
 /**
  * Get port from environment and store in Express.
@@ -59,8 +63,8 @@ const getUser = (token) => {
 };
 
 const server = new ApolloServer({
-  typeDefs: [userDefs, notesDef, classDefs, gradeDefs, userNotesDef, toDoDef],
-  resolvers: [userResolvers, notesResolvers, classResolvers, gradeResolvers, userNotesResolvers, toDoResolvers],
+  typeDefs: typeDefs,
+  resolvers: resolvers,
   playground: true,
   context: ({ req }) => {
     // sending authentication token to this body

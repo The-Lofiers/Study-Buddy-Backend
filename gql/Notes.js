@@ -23,6 +23,7 @@ const notesDef = gql`
         deleteNotes(
             id: Int!
         ): Boolean!
+    }
     `;
 
 const notesResolvers = {

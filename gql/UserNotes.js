@@ -32,6 +32,7 @@ const userNotesDef = gql`
         deleteUserNotes(
             id: Int!
         ): Boolean!
+    }
 `;
 
 const userNotesResolvers = {

@@ -43,14 +43,7 @@ const classDef = gql`
     }
 `;
 
-
 const classResolvers = {
-    // class(id: Int!): Class!
-    // classes: [Class!]!
-    // userClasses: [UserClass!]!
-    // userClass(id: Int!): UserClass!
-    // userClass(class_ID: Int!): [Class!]!
-
     Query: {
         class: (parent, args, context, info) => {
             if (!context.user) {
@@ -59,7 +52,7 @@ const classResolvers = {
                     "OOPSIE WOOPSIE UWU you are not authenticated!"
                 );
             }
-            return context.models.Class.findOne({
+            return context.models.class.findOne({
                 where: {
                     id: args.id,
                 },
@@ -73,29 +66,8 @@ const classResolvers = {
                     "OOPSIE WOOPSIE UWU you are not authenticated!"
                 );
             }
-            return context.models.Class.findAll({
-                where: {
-
-                }
-            });
+            return context.models.class.findAll();
         },
-
-
-        // // return user_ID from UserClass table
-        // userClass: (parent, args, context, info) => {
-        //     if (!context.user) {
-        //         // same context used to check if user is logged in
-        //         throw new AuthenticationError(
-        //             "OOPSIE WOOPSIE UWU you are not authenticated!"
-        //         );
-        //     }
-        //     return context.models.UserClass.findOne({
-        //         where: {
-        //             user_ID: args.user_ID,
-        //         },
-        //     });
-        // },
-
     },
 
     Mutation: {
@@ -106,7 +78,7 @@ const classResolvers = {
                     "OOPSIE WOOPSIE UWU you are not authenticated!"
                 );
             }
-            return context.models.Class.create({
+            return context.models.class.create({
                 className: args.className,
                 notes_ID: args.notes_ID,
                 grade_ID: args.grade_ID,
@@ -120,7 +92,7 @@ const classResolvers = {
                     "OOPSIE WOOPSIE UWU you are not authenticated!"
                 );
             }
-            return context.models.Class.update(
+            return context.models.class.update(
                 {
                     className: args.className,
                     todo_ID: args.todo_ID,
@@ -139,7 +111,7 @@ const classResolvers = {
                     "OOPSIE WOOPSIE UWU you are not authenticated!"
                 );
             }
-            return context.models.Class.destroy({
+            return context.models.class.destroy({
                 where: {
                     id: args.id,
                 },

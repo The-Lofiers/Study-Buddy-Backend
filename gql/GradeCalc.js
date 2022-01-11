@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const gradeCalcDef = gql`
     scalar Date
 
-    Type GradeCalc {
+    type GradeCalc {
         id: Int!
         assignment: String!
         weight: Int!
@@ -34,6 +34,7 @@ const gradeCalcDef = gql`
         deleteGradeCalc(
             id: Int!
         ): Boolean!
+    }
 `;
 
 const gradeCalcResolvers = {
