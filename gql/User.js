@@ -12,6 +12,12 @@ const jwt = require("jsonwebtoken"); // for authentication
 // ! means that the field is required, dont use for editUser
 const userDefs = gql`
   scalar Date
+
+  type Custom {
+    user: User!
+    token: String!
+  }
+
   type User {
     id: Int!
     firstname: String!
@@ -31,7 +37,7 @@ const userDefs = gql`
       lastname: String!
       email: String!
       password: String!
-    ): String!
+    ): Custom!
 
     editUser(
       id: Int!
@@ -93,7 +99,10 @@ const userResolvers = {
           email: args.email,
           password: hashedPassword,
         });
-        return jwt.sign({ id: user._id }, process.env.JWT_SECRET); // create a token
+        return {
+          user: user,
+          token: jwt.sign({ id: user._id }, process.env.JWT_SECRET),
+        }; // create a token
       } catch (err) {
         throw new Error("Error creating account");
       }
