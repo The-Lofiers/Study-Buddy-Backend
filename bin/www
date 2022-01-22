@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+require("dotenv").config({ path: "../.env" });
 const { ApolloServer, ForbiddenError } = require("apollo-server");
 const { ApolloServerPluginDrainHttpServer } = require("apollo-server-core");
 const { mergeResolvers } = require("@graphql-tools/merge");
@@ -11,7 +12,6 @@ const { mergeTypeDefs } = require("@graphql-tools/merge");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 var app = require("../app");
-require("dotenv").config({ path: "../.env" });
 var http = require("http");
 const { userDefs, userResolvers } = require("../gql/User");
 const { notesDef, notesResolvers } = require("../gql/Notes");

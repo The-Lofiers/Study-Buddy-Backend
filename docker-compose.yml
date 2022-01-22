@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    ports:
+    - ${DB_PORT}:${DB_PORT}
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_DB=${DATABASE}
+      - POSTGRES_DIALECT=${DIALECT}
+    volumes:
+    - ${DB_VOLUME}:/var/lib/postgresql/data
+  lofistudyseshbackend:
+    image: lofistudyseshbackend
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${PASSWORD}
+      - DB_DATABASE=${DATABASE}
+      - DB_HOST=${HOST}
+      - DB_PORT=${DB_PORT}
+      - DIALECT=${DIALECT}
+      - NODE_ENV=production
+    ports:
+      - 4000:4000
+
+volumes:
+  postgres-data:

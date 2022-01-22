@@ -4,7 +4,7 @@ const {
   emailValidation,
   passwordValidation,
   nameValidation,
-} = require("../helper/validation");
+} = require("../helper/Validation");
 const jwt = require("jsonwebtoken"); // for authentication
 
 // define the schema, the models, the queries, and the mutations for the graphql server
