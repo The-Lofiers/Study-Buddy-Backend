@@ -104,7 +104,7 @@ const userResolvers = {
           token: jwt.sign({ id: user._id }, process.env.JWT_SECRET),
         }; // create a token
       } catch (err) {
-        throw new Error("Error creating account");
+        throw new Error("Error creating account", err);
       }
     },
     editUser: async (parent, args, context, info) => {
