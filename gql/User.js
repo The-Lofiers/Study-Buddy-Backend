@@ -62,11 +62,15 @@ const userResolvers = {
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
-      return context.models.User.findOne({
-        where: {
-          id: args.id,
-        },
-      });
+      try {
+        return context.models.User.findOne({
+          where: {
+            id: args.id,
+          },
+        });
+      } catch (err) {
+        throw new Error("User not found");
+      }
     },
   },
 
