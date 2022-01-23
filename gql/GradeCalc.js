@@ -35,7 +35,7 @@ const gradeCalcDef = gql`
 
 const gradeCalcResolvers = {
   Query: {
-    gradeCalc: (parent, args, context, info) => {
+    gradeCalc: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -43,15 +43,33 @@ const gradeCalcResolvers = {
         );
       }
 
-      return context.models.GradeCalc.findOne({
+      const userClasses = await context.models.UserClass.findOne({
         where: {
-          id: args.id,
+          user_ID: context.user.id,
         },
       });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      try {
+        return context.models.GradeCalc.findOne({
+          where: {
+            class_ID: userClass.id,
+          },
+        });
+      } catch (err) {
+        throw new UserInputError(err.message, {
+          invalidArgs: args,
+        });
+      }
     },
   },
   Mutation: {
-    createGradeCalc: (parent, args, context, info) => {
+    createGradeCalc: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -63,7 +81,7 @@ const gradeCalcResolvers = {
         class_ID: args.class_ID,
       });
     },
-    editGradeCalc: (parent, args, context, info) => {
+    editGradeCalc: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -85,7 +103,7 @@ const gradeCalcResolvers = {
         }
       );
     },
-    deleteGradeCalc: (parent, args, context, info) => {
+    deleteGradeCalc: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(

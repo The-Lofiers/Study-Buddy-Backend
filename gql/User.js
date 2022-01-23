@@ -61,19 +61,6 @@ const userDefs = gql`
   }
 `;
 
-const decodedToken = (req, requireAuth = true) => {
-  const header = req.req.headers.authorization;
-
-  if (header) {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return decoded;
-  }
-  if (requireAuth) {
-    throw new Error("Login in to access resource");
-  }
-  return null;
-};
-
 const userResolvers = {
   Query: {
     user: async (parent, args, context, info) => {
@@ -141,6 +128,11 @@ const userResolvers = {
           email: args.email,
           password: hashedPassword,
         });
+
+        await context.models.UserClasses.create({
+          user_ID: user.id,
+        });
+
         return {
           user: user,
           token: jwt.sign({ id: user.id }, process.env.JWT_SECRET, {

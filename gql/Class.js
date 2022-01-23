@@ -11,10 +11,7 @@ const classDef = gql`
   type Class {
     id: Int!
     className: String!
-    todo_ID: Int!
-    notes_ID: Int!
-    user_ID: Int!
-    grade_ID: Int!
+    classes_ID: Int!
     createdAt: Date!
     updatedAt: Date!
   }
@@ -25,9 +22,9 @@ const classDef = gql`
   }
 
   type Mutation {
-    createClass(className: String!, notes_ID: Int!, grades_ID: Int!): Class!
+    createClass(className: String!): Class!
 
-    editClass(className: String, todo_ID: Int): Class!
+    editClass(className: String): Class!
 
     deleteClass(id: Int!): Boolean!
   }
@@ -35,7 +32,7 @@ const classDef = gql`
 
 const classResolvers = {
   Query: {
-    class: (parent, args, context, info) => {
+    class: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -43,14 +40,32 @@ const classResolvers = {
         );
       }
 
-      return context.models.class.findOne({
+      const userClasses = await context.models.UserClasses.findOne({
+        where: {
+          user_ID: context.user.id,
+        },
+      });
+
+      const userClass = await context.models.class.findOne({
         where: {
           id: args.id,
         },
       });
+
+      if (!userClass || !userClasses) {
+        throw new UserInputError("No class found");
+      }
+
+      if (userClasses.id !== userClass.classes_ID) {
+        throw new AuthenticationError(
+          "OOPSIE WOOPSIE UWU you are not authorized to access this class!"
+        );
+      }
+
+      return userClass;
     },
 
-    classes: (parent, args, context, info) => {
+    classes: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -58,12 +73,28 @@ const classResolvers = {
         );
       }
 
-      return context.models.class.findAll();
+      const userClasses = await context.models.UserClasses.findOne({
+        where: {
+          user_ID: context.user.id,
+        },
+      });
+
+      const userClass = await context.models.class.findAll({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      if (!userClasses || !userClass) {
+        throw new UserInputError("No classes found");
+      }
+
+      return userClass;
     },
   },
 
   Mutation: {
-    createClass: (parent, args, context, info) => {
+    createClass: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -71,12 +102,30 @@ const classResolvers = {
         );
       }
 
-      return context.models.class.create({
-        className: args.className,
-        notes_ID: args.notes_ID,
-        grade_ID: args.grade_ID,
-        user_ID: context.user.id,
+      const userClasses = await context.models.UserClasses.findOne({
+        where: {
+          user_ID: context.user.id,
+        },
       });
+
+      if (!userClasses) {
+        throw new UserInputError("No classes found");
+      }
+
+      if (args.className === "") {
+        throw new UserInputError("Class name cannot be empty");
+      }
+
+      try {
+        return context.models.class.create({
+          className: args.className,
+          classes_ID: userClasses.id,
+        });
+      } catch (err) {
+        throw new UserInputError(err.message, {
+          invalidArgs: args,
+        });
+      }
     },
     editClass: (parent, args, context, info) => {
       if (!context.user) {
@@ -86,17 +135,33 @@ const classResolvers = {
         );
       }
 
-      return context.models.class.update(
-        {
-          className: args.className,
-          todo_ID: args.todo_ID,
+      if (args.className === "") {
+        throw new UserInputError("Class name cannot be empty");
+      }
+
+      const userClasses = await context.models.UserClasses.findOne({
+        where: {
+          user_ID: context.user.id,
         },
-        {
-          where: {
-            id: args.id,
+      });
+
+      try {
+        return context.models.class.update(
+          {
+            className: args.className,
+            todo_ID: args.todo_ID,
           },
-        }
-      );
+          {
+            where: {
+              classes_ID: userClasses.id,
+            },
+          }
+        );
+      } catch (err) {
+        throw new UserInputError(err.message, {
+          invalidArgs: args,
+        });
+      }
     },
     deleteClass: (parent, args, context, info) => {
       if (!context.user) {
@@ -105,11 +170,24 @@ const classResolvers = {
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
-      return context.models.class.destroy({
+
+      const userClasses = await context.models.UserClasses.findOne({
         where: {
-          id: args.id,
+          user_ID: context.user.id,
         },
       });
+
+      try {
+        return context.models.class.destroy({
+          where: {
+            classes_ID: userClasses.id,
+          },
+        });
+      } catch (err) {
+        throw new UserInputError(err.message, {
+          invalidArgs: args,
+        });
+      }
     },
   },
 };
