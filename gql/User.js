@@ -94,7 +94,7 @@ const userResolvers = {
       }
 
       if (user.id !== context.user.id) {
-        throw new AuthenticationError("You cannot view your own profile");
+        throw new AuthenticationError("You cannot view other profiles");
       }
 
       return user;
@@ -171,6 +171,15 @@ const userResolvers = {
           id: args.id,
         },
       });
+
+      if (!user) {
+        throw new UserInputError("User not found");
+      }
+
+      if (user.id !== context.user.id) {
+        throw new AuthenticationError("You cannot edit other profiles");
+      }
+
       let errors = {};
       if (args.firstname) {
         if (!nameValidation(args.firstname)) {
@@ -227,6 +236,10 @@ const userResolvers = {
         throw new Error("User not found");
       }
 
+      if (user.id !== context.user.id) {
+        throw new AuthenticationError("You cannot delete other profiles");
+      }
+
       await user.destroy();
       return true;
     },
@@ -247,7 +260,7 @@ const userResolvers = {
       }
       return {
         token: jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-          expiresIn: "5000s",
+          expiresIn: "180s",
         }),
         refreshToken: jwt.sign(
           { id: user.id },
@@ -278,7 +291,7 @@ const userResolvers = {
         throw new AuthenticationError("Invalid credentials"); // throw error
       }
       return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "5000s",
+        expiresIn: "180s",
       });
     },
   },
