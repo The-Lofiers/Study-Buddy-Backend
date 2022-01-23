@@ -16,6 +16,7 @@ const userDefs = gql`
   type Custom {
     user: User!
     token: String!
+    refreshToken: String!
   }
 
   type User {
@@ -50,6 +51,8 @@ const userDefs = gql`
     deleteUser(id: Int!): Boolean!
 
     login(email: String!, password: String!): String!
+
+    refreshToken(refreshToken: String!): String!
   }
 `;
 
@@ -62,6 +65,7 @@ const userResolvers = {
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
+
       try {
         return context.models.User.findOne({
           where: {
@@ -91,6 +95,17 @@ const userResolvers = {
       if (!nameValidation(args.lastname)) {
         errors.lastname = "Please enter a valid last name";
       }
+
+      const user = await context.models.User.findOne({
+        where: {
+          email: args.email,
+        },
+      });
+
+      if (user) {
+        errors.email = "Email already exists";
+      }
+
       if (Object.keys(errors).length > 0) {
         throw new UserInputError("user input errors", { errors });
       }
@@ -105,7 +120,16 @@ const userResolvers = {
         });
         return {
           user: user,
-          token: jwt.sign({ id: user._id }, process.env.JWT_SECRET),
+          token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "180s",
+          }),
+          refreshToken: jwt.sign(
+            { id: user._id },
+            process.env.REFRESH_TOKEN_SECRET,
+            {
+              expiresIn: "365d",
+            }
+          ),
         }; // create a token
       } catch (err) {
         throw new Error("Error creating account", err);
@@ -118,6 +142,7 @@ const userResolvers = {
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
+
       const user = await context.models.User.findOne({
         where: {
           id: args.id,
@@ -168,6 +193,7 @@ const userResolvers = {
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
+
       const user = await context.models.User.findOne({
         where: {
           id: args.id,
@@ -190,7 +216,43 @@ const userResolvers = {
       if (!valid) {
         throw new AuthenticationError("Invalid credentials"); // throw error
       }
-      return jwt.sign({ id: user._id }, process.env.JWT_SECRET); // create a token
+      return {
+        token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "180s",
+        }),
+        refreshToken: jwt.sign(
+          { id: user._id },
+          process.env.REFRESH_TOKEN_SECRET,
+          {
+            expiresIn: "365d",
+          }
+        ),
+      }; // create a token
+    },
+    refreshToken: async (parent, args, context, info) => {
+      const { id } = jwt.verify(
+        args.refreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+      );
+
+      if (!id) {
+        throw new AuthenticationError("Invalid refresh token");
+      }
+
+      const user = await context.models.User.findOne({
+        where: {
+          email: args.email,
+        },
+      });
+      if (!user) {
+        // if user does not exist
+        throw new AuthenticationError("Invalid credentials"); // throw error
+      }
+      return {
+        token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "180s",
+        }),
+      }; // create a token
     },
   },
 };
