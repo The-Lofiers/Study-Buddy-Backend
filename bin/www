@@ -86,6 +86,7 @@ const server = new ApolloServer({
     const token = req.headers.authorization;
     // try to retrieve a user with the token
     const user = getUser(token);
+    console.log("user", user);
     // for now, let's log the user to the console:
     // console.log(user);
     // add the db models and the user to the context
@@ -95,7 +96,7 @@ const server = new ApolloServer({
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
-server.listen(port, () => console.log("listening to 4000"));
+server.listen(port, () => console.log(`listening to ${port}`));
 /**
  * Normalize a port into a number, string, or false.
  */

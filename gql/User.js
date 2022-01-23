@@ -13,6 +13,11 @@ const jwt = require("jsonwebtoken"); // for authentication
 const userDefs = gql`
   scalar Date
 
+  type Tokens {
+    token: String!
+    refreshToken: String!
+  }
+
   type Custom {
     user: User!
     token: String!
@@ -50,31 +55,49 @@ const userDefs = gql`
 
     deleteUser(id: Int!): Boolean!
 
-    login(email: String!, password: String!): String!
+    login(email: String!, password: String!): Tokens!
 
     refreshToken(refreshToken: String!): String!
   }
 `;
 
+const decodedToken = (req, requireAuth = true) => {
+  const header = req.req.headers.authorization;
+
+  if (header) {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return decoded;
+  }
+  if (requireAuth) {
+    throw new Error("Login in to access resource");
+  }
+  return null;
+};
+
 const userResolvers = {
   Query: {
-    user: (parent, args, context, info) => {
+    user: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
+      const user = await context.models.User.findOne({
+        where: {
+          id: args.id,
+        },
+      });
 
-      try {
-        return context.models.User.findOne({
-          where: {
-            id: args.id,
-          },
-        });
-      } catch (err) {
-        throw new Error("User not found");
+      if (!user) {
+        throw new UserInputError("User not found");
       }
+
+      if (user.id !== context.user.id) {
+        throw new AuthenticationError("You cannot view your own profile");
+      }
+
+      return user;
     },
   },
 
@@ -120,11 +143,11 @@ const userResolvers = {
         });
         return {
           user: user,
-          token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+          token: jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
             expiresIn: "180s",
           }),
           refreshToken: jwt.sign(
-            { id: user._id },
+            { id: user.id },
             process.env.REFRESH_TOKEN_SECRET,
             {
               expiresIn: "365d",
@@ -199,6 +222,11 @@ const userResolvers = {
           id: args.id,
         },
       });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
       await user.destroy();
       return true;
     },
@@ -208,6 +236,7 @@ const userResolvers = {
           email: args.email,
         },
       });
+      console.log(user);
       if (!user) {
         // if user does not exist
         throw new AuthenticationError("Invalid credentials"); // throw error
@@ -217,11 +246,11 @@ const userResolvers = {
         throw new AuthenticationError("Invalid credentials"); // throw error
       }
       return {
-        token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-          expiresIn: "180s",
+        token: jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+          expiresIn: "5000s",
         }),
         refreshToken: jwt.sign(
-          { id: user._id },
+          { id: user.id },
           process.env.REFRESH_TOKEN_SECRET,
           {
             expiresIn: "365d",
@@ -248,11 +277,9 @@ const userResolvers = {
         // if user does not exist
         throw new AuthenticationError("Invalid credentials"); // throw error
       }
-      return {
-        token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-          expiresIn: "180s",
-        }),
-      }; // create a token
+      return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+        expiresIn: "5000s",
+      });
     },
   },
 };
