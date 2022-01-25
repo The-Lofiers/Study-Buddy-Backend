@@ -20,7 +20,7 @@ const notesDef = gql`
 
 const notesResolvers = {
   Query: {
-    notes: (parent, args, context, info) => {
+    notes: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -55,7 +55,7 @@ const notesResolvers = {
     },
   },
   Mutation: {
-    deleteNotes: (parent, args, context, info) => {
+    deleteNotes: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
