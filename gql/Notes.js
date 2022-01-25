@@ -3,21 +3,17 @@ const jwt = require("jsonwebtoken");
 
 const notesDef = gql`
   scalar Date
-
   type Notes {
     id: Int!
     class_ID: Int!
     updatedAt: Date!
     createdAt: Date!
   }
-
   type Query {
     notes(id: Int!): Notes!
   }
-
   type Mutation {
     createNotes(class_ID: Int!): Notes!
-
     deleteNotes(id: Int!): Boolean!
   }
 `;
@@ -32,26 +28,33 @@ const notesResolvers = {
         );
       }
 
-      return context.models.Notes.findOne({
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          id: args.id,
+          user_id: context.user.id,
         },
       });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      try {
+        return context.models.Notes.findOne({
+          where: {
+            id: args.id,
+            class_ID: userClass.id,
+          },
+        });
+      } catch (err) {
+        throw new UserInputError(err.message, {
+          invalidArgs: args,
+        });
+      }
     },
   },
   Mutation: {
-    createNotes: (parent, args, context, info) => {
-      if (!context.user) {
-        // same context used to check if user is logged in
-        throw new AuthenticationError(
-          "OOPSIE WOOPSIE UWU you are not authenticated!"
-        );
-      }
-
-      return context.models.Notes.create({
-        class_ID: args.class_ID,
-      });
-    },
     deleteNotes: (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
@@ -60,9 +63,22 @@ const notesResolvers = {
         );
       }
 
+      const userClasses = await context.models.UsersClasses.findOne({
+        where: {
+          user_id: context.user.id,
+        },
+      });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
       return context.models.Notes.destroy({
         where: {
           id: args.id,
+          class_ID: userClass.id,
         },
       });
     },

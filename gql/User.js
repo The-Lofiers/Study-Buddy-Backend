@@ -120,12 +120,15 @@ const userResolvers = {
         throw new UserInputError("user input errors", { errors });
       }
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(args.password, salt);
+      const hashedPassword = await bcrypt.hash(
+        args.password.trim().escape(),
+        salt
+      );
       try {
         const user = await context.models.User.create({
-          firstname: args.firstname,
-          lastname: args.lastname,
-          email: args.email,
+          firstname: args.firstname.trim().escape(),
+          lastname: args.lastname.trim().escape(),
+          email: args.email.trim().escape(),
           password: hashedPassword,
         });
 
@@ -178,21 +181,21 @@ const userResolvers = {
         if (!nameValidation(args.firstname)) {
           errors.firstname = "Please enter a valid first name";
         } else {
-          user.firstname = args.firstname;
+          user.firstname = args.firstname.trim().escape();
         }
       }
       if (args.lastname) {
         if (!nameValidation(args.lastname)) {
           errors.lastname = "Please enter a valid last name";
         } else {
-          user.lastname = args.lastname;
+          user.lastname = args.lastname.trim().escape();
         }
       }
       if (args.email) {
         if (!emailValidation(args.email)) {
           errors.email = "Please enter a valid email address";
         } else {
-          user.email = args.email;
+          user.email = args.email.trim().escape();
         }
       }
       if (args.password) {
@@ -201,7 +204,10 @@ const userResolvers = {
             "Please enter a password with at least 8 characters, at least one Uppercase letter, one number, and one special character";
         } else {
           const salt = await bcrypt.genSalt(10);
-          const hashedPassword = await bcrypt.hash(args.password, salt);
+          const hashedPassword = await bcrypt.hash(
+            args.password.trim().escape(),
+            salt
+          );
           user.password = hashedPassword;
         }
       }

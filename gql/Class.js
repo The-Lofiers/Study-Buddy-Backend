@@ -117,10 +117,16 @@ const classResolvers = {
       }
 
       try {
-        return context.models.class.create({
+        const userClass = await context.models.class.create({
           className: args.className,
           classes_ID: userClasses.id,
         });
+
+        await context.models.Notes.create({
+          class_ID: userClass.id,
+        });
+
+        return userClass;
       } catch (err) {
         throw new UserInputError(err.message, {
           invalidArgs: args,
