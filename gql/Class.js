@@ -40,9 +40,9 @@ const classResolvers = {
         );
       }
 
-      const userClasses = await context.models.UserClasses.findOne({
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          user_ID: context.user.id,
+          user_id: context.user.id,
         },
       });
 
@@ -73,9 +73,9 @@ const classResolvers = {
         );
       }
 
-      const userClasses = await context.models.UserClasses.findOne({
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          user_ID: context.user.id,
+          user_id: context.user.id,
         },
       });
 
@@ -102,9 +102,9 @@ const classResolvers = {
         );
       }
 
-      const userClasses = await context.models.UserClasses.findOne({
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          user_ID: context.user.id,
+          user_id: context.user.id,
         },
       });
 
@@ -127,7 +127,7 @@ const classResolvers = {
         });
       }
     },
-    editClass: (parent, args, context, info) => {
+    editClass: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -139,9 +139,9 @@ const classResolvers = {
         throw new UserInputError("Class name cannot be empty");
       }
 
-      const userClasses = await context.models.UserClasses.findOne({
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          user_ID: context.user.id,
+          user_id: context.user.id,
         },
       });
 
@@ -149,7 +149,6 @@ const classResolvers = {
         return context.models.class.update(
           {
             className: args.className,
-            todo_ID: args.todo_ID,
           },
           {
             where: {
@@ -163,7 +162,7 @@ const classResolvers = {
         });
       }
     },
-    deleteClass: (parent, args, context, info) => {
+    deleteClass: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -171,9 +170,9 @@ const classResolvers = {
         );
       }
 
-      const userClasses = await context.models.UserClasses.findOne({
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          user_ID: context.user.id,
+          user_id: context.user.id,
         },
       });
 

@@ -34,11 +34,30 @@ const toDoResolvers = {
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
-      return context.models.ToDo.findOne({
+
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          id: args.id,
+          user_id: context.user.id,
         },
       });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      try {
+        return context.models.ToDo.findAll({
+          where: {
+            class_ID: userClass.id,
+          },
+        });
+      } catch (err) {
+        throw new UserInputError(err.message, {
+          invalidArgs: args,
+        });
+      }
     },
   },
 
@@ -51,10 +70,28 @@ const toDoResolvers = {
         );
       }
 
-      return context.models.ToDo.create({
-        toDo: args.todo,
-        class_ID: args.class_ID,
+      const userClasses = await context.models.UsersClasses.findOne({
+        where: {
+          user_id: context.user.id,
+        },
       });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      try {
+        return context.models.ToDo.create({
+          toDo: args.todo,
+          class_ID: userClass.id,
+        });
+      } catch (err) {
+        throw new UserInputError(err.message, {
+          invalidArgs: args,
+        });
+      }
     },
     editToDo: (parent, args, context, info) => {
       if (!context.user) {
@@ -64,9 +101,34 @@ const toDoResolvers = {
         );
       }
 
-      return context.models.ToDo.update({
-        toDo: args.todo,
+      const userClasses = await context.models.UsersClasses.findOne({
+        where: {
+          user_id: context.user.id,
+        },
       });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      try {
+        return context.models.ToDo.update(
+          {
+            toDo: args.todo,
+          },
+          {
+            where: {
+              class_ID: userClass.id,
+            },
+          }
+        );
+      } catch (err) {
+        throw new UserInputError(err.message, {
+          invalidArgs: args,
+        });
+      }
     },
     deleteToDo: (parent, args, context, info) => {
       if (!context.user) {
@@ -76,11 +138,30 @@ const toDoResolvers = {
         );
       }
 
-      return context.models.ToDo.destroy({
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          id: args.id,
+          user_id: context.user.id,
         },
       });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      try {
+        return context.models.ToDo.destroy({
+          where: {
+            id: args.id,
+            class_ID: userClass.id,
+          },
+        });
+      } catch (err) {
+        throw new UserInputError(err.message, {
+          invalidArgs: args,
+        });
+      }
     },
   },
 };

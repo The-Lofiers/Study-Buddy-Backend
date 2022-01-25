@@ -129,8 +129,9 @@ const userResolvers = {
           password: hashedPassword,
         });
 
-        await context.models.UserClasses.create({
-          user_ID: user.id,
+        console.log(context.models.UsersClasses);
+        await context.models.UsersClasses.create({
+          user_id: user.id,
         });
 
         return {
@@ -147,7 +148,7 @@ const userResolvers = {
           ),
         }; // create a token
       } catch (err) {
-        throw new Error("Error creating account", err);
+        throw new Error("Error creating account " + err);
       }
     },
     editUser: async (parent, args, context, info) => {

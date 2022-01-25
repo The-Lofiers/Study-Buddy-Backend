@@ -43,9 +43,9 @@ const gradeCalcResolvers = {
         );
       }
 
-      const userClasses = await context.models.UserClass.findOne({
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          user_ID: context.user.id,
+          user_id: context.user.id,
         },
       });
 

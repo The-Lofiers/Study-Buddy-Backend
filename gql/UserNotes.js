@@ -50,12 +50,7 @@ const userNotesResolvers = {
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
-      const decoded = jwt.verify(context.token, process.env.JWT_SECRET);
-      if (decoded.id !== context.user.id) {
-        throw new AuthenticationError(
-          "OOPSIE WOOPSIE UWU you are not authenticated!"
-        );
-      }
+
       return context.models.UserNotes.create({
         notes_ID: args.notes_ID,
         url: args.url,
@@ -69,12 +64,7 @@ const userNotesResolvers = {
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
-      const decoded = jwt.verify(context.token, process.env.JWT_SECRET);
-      if (decoded.id !== context.user.id) {
-        throw new AuthenticationError(
-          "OOPSIE WOOPSIE UWU you are not authenticated!"
-        );
-      }
+
       return context.models.UserNotes.update(
         {
           url: args.url,
@@ -94,12 +84,7 @@ const userNotesResolvers = {
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
-      const decoded = jwt.verify(context.token, process.env.JWT_SECRET);
-      if (decoded.id !== context.user.id) {
-        throw new AuthenticationError(
-          "OOPSIE WOOPSIE UWU you are not authenticated!"
-        );
-      }
+
       return context.models.UserNotes.destroy({
         where: {
           id: args.id,
