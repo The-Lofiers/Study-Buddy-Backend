@@ -129,7 +129,6 @@ const userResolvers = {
           password: hashedPassword,
         });
 
-        console.log(context.models.UsersClasses);
         await context.models.UsersClasses.create({
           user_id: user.id,
         });
