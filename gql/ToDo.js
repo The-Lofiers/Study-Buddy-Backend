@@ -27,7 +27,7 @@ const toDoDef = gql`
 
 const toDoResolvers = {
   Query: {
-    toDo: (parent, args, context, info) => {
+    toDo: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -62,7 +62,7 @@ const toDoResolvers = {
   },
 
   Mutation: {
-    createToDo: (parent, args, context, info) => {
+    createToDo: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -93,7 +93,7 @@ const toDoResolvers = {
         });
       }
     },
-    editToDo: (parent, args, context, info) => {
+    editToDo: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -130,7 +130,7 @@ const toDoResolvers = {
         });
       }
     },
-    deleteToDo: (parent, args, context, info) => {
+    deleteToDo: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
