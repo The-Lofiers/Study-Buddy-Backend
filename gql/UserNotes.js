@@ -28,22 +28,45 @@ const userNotesDef = gql`
 
 const userNotesResolvers = {
   Query: {
-    userNotes: (parent, args, context, info) => {
+    userNotes: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
           "OOPSIE WOOPSIE UWU you are not authenticated!"
         );
       }
-      return context.models.UserNotes.findOne({
+
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          id: args.id,
+          user_id: context.user.id,
         },
       });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      const notes = await context.models.Notes.findOne({
+        where: {
+          class_ID: userClass.id,
+        },
+      });
+
+      try {
+        return context.models.UserNotes.findOne({
+          where: {
+            notes_ID: notes.id,
+          },
+        });
+      } catch (err) {
+        throw new UserInputError(err);
+      }
     },
   },
   Mutation: {
-    createUserNotes: (parent, args, context, info) => {
+    createUserNotes: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -51,33 +74,35 @@ const userNotesResolvers = {
         );
       }
 
-      return context.models.UserNotes.create({
-        notes_ID: args.notes_ID,
-        url: args.url,
-        docName: args.docName,
+      const userClasses = await context.models.UsersClasses.findOne({
+        where: {
+          user_id: context.user.id,
+        },
       });
-    },
-    editUserNotes: (parent, args, context, info) => {
-      if (!context.user) {
-        // same context used to check if user is logged in
-        throw new AuthenticationError(
-          "OOPSIE WOOPSIE UWU you are not authenticated!"
-        );
-      }
 
-      return context.models.UserNotes.update(
-        {
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      const notes = await context.models.Notes.findOne({
+        where: {
+          class_ID: userClass.id,
+        },
+      });
+
+      try {
+        return context.models.UserNotes.create({
+          notes_ID: notes.id,
           url: args.url,
           docName: args.docName,
-        },
-        {
-          where: {
-            id: args.id,
-          },
-        }
-      );
+        });
+      } catch (err) {
+        throw new UserInputError(err);
+      }
     },
-    deleteUserNotes: (parent, args, context, info) => {
+    editUserNotes: async (parent, args, context, info) => {
       if (!context.user) {
         // same context used to check if user is logged in
         throw new AuthenticationError(
@@ -85,11 +110,77 @@ const userNotesResolvers = {
         );
       }
 
-      return context.models.UserNotes.destroy({
+      const userClasses = await context.models.UsersClasses.findOne({
         where: {
-          id: args.id,
+          user_id: context.user.id,
         },
       });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      const notes = await context.models.Notes.findOne({
+        where: {
+          class_ID: userClass.id,
+        },
+      });
+
+      try {
+        return context.models.UserNotes.update(
+          {
+            url: args.url,
+            docName: args.docName,
+          },
+          {
+            where: {
+              notes_ID: notes.id,
+              id: args.id,
+            },
+          }
+        );
+      } catch (err) {
+        throw new UserInputError(err);
+      }
+    },
+    deleteUserNotes: async (parent, args, context, info) => {
+      if (!context.user) {
+        // same context used to check if user is logged in
+        throw new AuthenticationError(
+          "OOPSIE WOOPSIE UWU you are not authenticated!"
+        );
+      }
+
+      const userClasses = await context.models.UsersClasses.findOne({
+        where: {
+          user_id: context.user.id,
+        },
+      });
+
+      const userClass = await context.models.class.findOne({
+        where: {
+          classes_ID: userClasses.id,
+        },
+      });
+
+      const notes = await context.models.Notes.findOne({
+        where: {
+          class_ID: userClass.id,
+        },
+      });
+
+      try {
+        return context.models.UserNotes.destroy({
+          where: {
+            notes_ID: notes.id,
+            id: args.id,
+          },
+        });
+      } catch (err) {
+        throw new UserInputError(err);
+      }
     },
   },
 };

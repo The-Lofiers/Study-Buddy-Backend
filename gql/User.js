@@ -72,16 +72,12 @@ const userResolvers = {
       }
       const user = await context.models.User.findOne({
         where: {
-          id: args.id,
+          id: context.user.id,
         },
       });
 
       if (!user) {
         throw new UserInputError("User not found");
-      }
-
-      if (user.id !== context.user.id) {
-        throw new AuthenticationError("You cannot view other profiles");
       }
 
       return user;
@@ -160,16 +156,12 @@ const userResolvers = {
 
       const user = await context.models.User.findOne({
         where: {
-          id: args.id,
+          id: context.user.id,
         },
       });
 
       if (!user) {
         throw new UserInputError("User not found");
-      }
-
-      if (user.id !== context.user.id) {
-        throw new AuthenticationError("You cannot edit other profiles");
       }
 
       let errors = {};
@@ -220,16 +212,12 @@ const userResolvers = {
 
       const user = await context.models.User.findOne({
         where: {
-          id: args.id,
+          id: context.user.id,
         },
       });
 
       if (!user) {
         throw new Error("User not found");
-      }
-
-      if (user.id !== context.user.id) {
-        throw new AuthenticationError("You cannot delete other profiles");
       }
 
       await user.destroy();
@@ -241,7 +229,6 @@ const userResolvers = {
           email: args.email,
         },
       });
-      console.log(user);
       if (!user) {
         // if user does not exist
         throw new AuthenticationError("Invalid credentials"); // throw error
@@ -252,7 +239,7 @@ const userResolvers = {
       }
       return {
         token: jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-          expiresIn: "180s",
+          expiresIn: "365d",
         }),
         refreshToken: jwt.sign(
           { id: user.id },

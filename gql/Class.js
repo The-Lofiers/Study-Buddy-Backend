@@ -40,26 +40,23 @@ const classResolvers = {
         );
       }
 
-      const userClasses = await context.models.UsersClasses.findOne({
-        where: {
-          user_id: context.user.id,
-        },
-      });
-
       const userClass = await context.models.class.findOne({
+        include: [
+          {
+            model: context.models.UsersClasses,
+            where: {
+              user_id: context.user.id,
+            },
+            required: true,
+          },
+        ],
         where: {
           id: args.id,
         },
       });
 
-      if (!userClass || !userClasses) {
+      if (!userClass) {
         throw new UserInputError("No class found");
-      }
-
-      if (userClasses.id !== userClass.classes_ID) {
-        throw new AuthenticationError(
-          "OOPSIE WOOPSIE UWU you are not authorized to access this class!"
-        );
       }
 
       return userClass;
